@@ -1,0 +1,19 @@
+expname = exp_train  # specify the experiment name here
+distributed = True
+
+train_dataset = vimeo
+eval_dataset = vimeo
+
+lr = 1e-4
+lr_raft = 1e-6
+train_raft = True
+use_depth_for_feature = True
+use_inpainting_mask_for_feature = True
+
+loss_mode = lpips
+vary_pts_radius = True
+use_depth_for_decoding = True
+adaptive_pts_radius = True
+
+i_img = 200
+i_print = 10

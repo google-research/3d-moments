@@ -1,0 +1,7 @@
+.idea
+RAFT/models
+inpainting_ckpts/
+tmp/
+__pycache__/
+DPT/weights
+inpainting_ckpts/*.pth
