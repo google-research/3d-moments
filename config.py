@@ -19,7 +19,7 @@ def config_parser():
     parser = configargparse.ArgumentParser()
     parser.add_argument('--config', is_config_file=True, help='config file path')
     # general
-    parser.add_argument('--rootdir', type=str, default='/mnt/filestore/code/space-time/',
+    parser.add_argument('--rootdir', type=str, default='./',
                         help='the path to the project root directory.')
     parser.add_argument("--expname", type=str, default='exp', help='experiment name')
     parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',

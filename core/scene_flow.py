@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-from RAFT.core.utils.utils import InputPadder
+from third_party.RAFT.core.utils.utils import InputPadder
 from core.utils import *
 
 

@@ -1,4 +1,18 @@
-#!/bin/bash
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 # download DPT (https://github.com/isl-org/DPT) pretrained weights into DPT/weights
 wget https://github.com/intel-isl/DPT/releases/download/1_0/dpt_hybrid-midas-501f0c75.pt -P DPT/weights
 
@@ -11,7 +25,7 @@ rm -rf models.zip
 wget https://filebox.ece.vt.edu/~jbhuang/project/3DPhoto/model/color-model.pth
 wget https://filebox.ece.vt.edu/~jbhuang/project/3DPhoto/model/depth-model.pth
 wget https://filebox.ece.vt.edu/~jbhuang/project/3DPhoto/model/edge-model.pth
-
+mkdir inpainting_ckpts/
 mv color-model.pth inpainting_ckpts/
 mv depth-model.pth inpainting_ckpts/
 mv edge-model.pth inpainting_ckpts/

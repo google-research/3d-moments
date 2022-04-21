@@ -1,7 +1,9 @@
 .idea
-RAFT/models
-inpainting_ckpts/
+third_party/RAFT/models
 tmp/
 __pycache__/
-DPT/weights
-inpainting_ckpts/*.pth
+third_party/DPT/weights
+pretrained/
+inpainting_ckpts/
+logs/
+out/

@@ -6,13 +6,13 @@ import torch
 import cv2
 import argparse
 
-from DPT.util import io
+from third_party.DPT.util import io
 
 from torchvision.transforms import Compose
 
-from DPT.dpt.models import DPTDepthModel
-from DPT.dpt.midas_net import MidasNet_large
-from DPT.dpt.transforms import Resize, NormalizeImage, PrepareForNet
+from third_party.DPT.dpt.models import DPTDepthModel
+from third_party.DPT.dpt.midas_net import MidasNet_large
+from third_party.DPT.dpt.transforms import Resize, NormalizeImage, PrepareForNet
 
 
 def run_dpt(input_path, output_path, model_path, model_type="dpt_hybrid", optimize=True,

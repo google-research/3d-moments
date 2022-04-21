@@ -22,8 +22,8 @@ import torchvision
 import torch.utils.data.distributed
 from tqdm import tqdm
 from model import get_raft_model
-from RAFT.core.utils.utils import InputPadder
-from DPT.run_monodepth import run_dpt
+from third_party.RAFT.core.utils.utils import InputPadder
+from third_party.DPT.run_monodepth import run_dpt
 from utils import *
 from model import SpaceTimeModel
 from core.utils import *
@@ -64,7 +64,7 @@ def homography_warp_pairs(args):
     warped_dpt_out_dir = os.path.join(warped_out_dir, 'dpt_depth')
     os.makedirs(warped_dpt_out_dir, exist_ok=True)
 
-    dpt_model_path = 'DPT/weights/dpt_hybrid-midas-501f0c75.pt'
+    dpt_model_path = 'third_party/DPT/weights/dpt_hybrid-midas-501f0c75.pt'
     run_dpt(input_path=input_dir, output_path=dpt_out_dir, model_path=dpt_model_path, optimize=False)
     disp_files = sorted(glob.glob(os.path.join(dpt_out_dir, '*.png')))
 

@@ -17,7 +17,7 @@ import os
 import torch
 from networks.resunet import ResUNet
 from networks.img_decoder import ImgDecoder
-from RAFT.core.raft import RAFT
+from third_party.RAFT.core.raft import RAFT
 from utils import de_parallel
 
 
