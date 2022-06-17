@@ -10,7 +10,9 @@ This repository contains code for paper "3D Moments from Near-Duplicate Photos",
 > [Janne Kontkanen](https://www.linkedin.com/in/jannekontkanen/)
 > CVPR 2022
 
-#### [project page](https://3d-moments.github.io/) | [paper](todo)
+![video](assets/teaser.gif)
+
+#### [Project Page](https://3d-moments.github.io/) | [Paper](https://arxiv.org/abs/2205.06255)
 ## Prerequisites
 The code is tested with Python3.7, PyTorch == 1.7.1 and CUDA == 10.1. 
    We recommend you to use anaconda to make sure that all dependencies are in place. 
@@ -27,7 +29,7 @@ The following script will download pretrained models for: 1) our pretrained mode
 ```
 
 ## Demos
-We provided some input pair samples in the `data/` folder. You can render space-time videos using our pretrained model:
+We provided some sample input pairs in the `demo/` folder. You can render space-time videos on them using our pretrained model:
 
 
 ```
