@@ -80,3 +80,8 @@ python train.py --config configs/train.txt
   year      = {2022}
 }
 ```
+
+## Disclaimers
+Open source release prepared by Qianqian Wang.
+
+This is not an official Google product.
