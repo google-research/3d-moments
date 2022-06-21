@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cv2
 import glob
 import time
 import imageio
+import cv2
 
 import config
 import torchvision
@@ -31,6 +31,15 @@ from core.scene_flow import SceneFlowEstimator
 from core.renderer import ImgRenderer
 from core.inpainter import Inpainter
 from data_loaders.data_utils import resize_img
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
+def process_boundary_mask(mask):
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    closing = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=5)
+    dilation = cv2.dilate(closing, kernel, iterations=1, borderType=cv2.BORDER_CONSTANT, borderValue=0.)
+    return dilation
 
 
 def compute_optical_flow(args, img1, img2, return_np_array=False):
@@ -42,16 +51,17 @@ def compute_optical_flow(args, img1, img2, return_np_array=False):
         image1, image2 = padder.pad(img1, img2)
         flow_low, flow_up = raft_model.module(image1, image2, iters=20, test_mode=True, padder=padder)
 
-        if return_np_array:
-            return flow_up.cpu().numpy().transpose(0, 2, 3, 1)
-        return flow_up.permute(0, 2, 3, 1).detach()  # [B, h, w, 2]
+    del raft_model
+    torch.cuda.empty_cache()
+    if return_np_array:
+        return flow_up.cpu().numpy().transpose(0, 2, 3, 1)
+    return flow_up.permute(0, 2, 3, 1).detach()  # [B, h, w, 2]
 
 
 # homography alignment
 def homography_warp_pairs(args):
     input_dir = args.input_dir
     print('processing input folder {}...'.format(input_dir))
-    print('aligning the two input images via a homography...')
     img_files = sorted(glob.glob(os.path.join(input_dir, '*.png'))) + \
                 sorted(glob.glob(os.path.join(input_dir, '*.jpg')))
     assert len(img_files) == 2, 'input folder must contain 2 images, found {} images instead'.format(len(img_files))
@@ -79,6 +89,7 @@ def homography_warp_pairs(args):
     y = np.arange(img_w)
     coords = np.stack(np.meshgrid(y, x), -1)
 
+    print('=========================aligning the two input images via a homography...=========================')
     flow12 = compute_optical_flow(args, img1, img2, return_np_array=True)[0]
     flow12_norm = np.linalg.norm(flow12, axis=-1)
     mask_valid = (flow12_norm < np.inf) * (disp1 > 0)
@@ -94,6 +105,7 @@ def homography_warp_pairs(args):
     img2_warped = cv2.warpPerspective(img2, H, (img_w, img_h), flags=cv2.INTER_LINEAR)
     imageio.imwrite(os.path.join(warped_out_dir, os.path.basename(img_files[0])), img1)
     imageio.imwrite(os.path.join(warped_out_dir, os.path.basename(img_files[1])), img2_warped)
+    print('finished')
 
     disp2_warped = cv2.warpPerspective(disp2, H, (img_w, img_h), flags=cv2.INTER_LINEAR)
     scale21 = np.mean(mask_valid * (disp2_warped / np.clip(disp1, a_min=1e-6, a_max=np.inf))) / np.mean(mask_valid)
@@ -169,70 +181,64 @@ def get_input_data(args, ds_factor=1):
 def render(args):
     device = "cuda:{}".format(args.local_rank)
     homography_warp_pairs(args)
+
+    print('=========================run 3D Moments...=========================')
+
     data = get_input_data(args)
+    rgb_file1 = data['src_rgb_file1'][0]
+    rgb_file2 = data['src_rgb_file2'][0]
+    frame_id1 = os.path.basename(rgb_file1).split('.')[0]
+    frame_id2 = os.path.basename(rgb_file2).split('.')[0]
+    scene_id = rgb_file1.split('/')[-3]
 
     video_out_folder = os.path.join(args.input_dir, 'out')
     os.makedirs(video_out_folder, exist_ok=True)
 
     model = SpaceTimeModel(args)
+    if model.start_step == 0:
+        raise Exception('no pretrained model found! please check the model path.')
+
     scene_flow_estimator = SceneFlowEstimator(args, model.raft)
     inpainter = Inpainter(args)
     renderer = ImgRenderer(args, model, scene_flow_estimator, inpainter, device)
 
     model.switch_to_eval()
     with torch.no_grad():
-        start = time.time()
         renderer.process_data(data)
 
         pts1, pts2, rgb1, rgb2, feat1, feat2, mask, side_ids, optical_flow = \
             renderer.render_rgbda_layers_with_scene_flow(return_pts=True)
 
-        pre_processing_time = time.time() - start
-
         num_frames = [60, 60, 60, 90]
-        video_paths = ['static', 'zoom-in', 'side', 'circle']
-        Ts = [define_camera_path(num_frames[0], 0., 0., 0., path_type='straight-line', return_t_only=True),
-              define_camera_path(num_frames[1], 0., 0., -0.24, path_type='straight-line', return_t_only=True),
-              define_camera_path(num_frames[2], -0.09, 0, -0, path_type='double-straight-line', return_t_only=True),
-              define_camera_path(num_frames[3], -0.04, -0.04, -0.09, path_type='circle', return_t_only=True),
-              ]
-        frames = [[] for _ in range(len(video_paths))]
-        direct_frames = [[] for _ in range(len(video_paths))]
+        video_paths = ['up-down', 'zoom-in', 'side', 'circle']
+        Ts = [
+            define_camera_path(num_frames[0], 0., -0.08, 0., path_type='double-straight-line', return_t_only=True),
+            define_camera_path(num_frames[1], 0., 0., -0.24, path_type='straight-line', return_t_only=True),
+            define_camera_path(num_frames[2], -0.09, 0, -0, path_type='double-straight-line', return_t_only=True),
+            define_camera_path(num_frames[3], -0.04, -0.04, -0.09, path_type='circle', return_t_only=True),
+        ]
+        crop = 32
 
         for j, T in enumerate(Ts):
             T = torch.from_numpy(T).float().to(renderer.device)
             time_steps = np.linspace(0, 1, num_frames[j])
-            start = time.time()
+            frames = []
             for i, t_step in tqdm(enumerate(time_steps), total=len(time_steps),
                                   desc='generating video of {} camera trajectory'.format(video_paths[j])):
-                pred_img, direct_img, meta = renderer.render_pcd(pts1, pts2, rgb1, rgb2,
-                                                                 feat1, feat2, mask, side_ids,
-                                                                 t=T[i], time=t_step)
+                pred_img, _, meta = renderer.render_pcd(pts1, pts2, rgb1, rgb2,
+                                                        feat1, feat2, mask, side_ids,
+                                                        t=T[i], time=t_step)
                 frame = (255. * pred_img.detach().cpu().squeeze().permute(1, 2, 0).numpy()).astype(np.uint8)
-                frames[j].append(frame)
-                direct_frame = (255 * direct_img.squeeze().permute(1, 2, 0).cpu().numpy()).astype(np.uint8)
-                direct_frames[j].append(direct_frame)
-            render_time = time.time() - start
+                # mask out fuzzy image boundaries due to no outpainting
+                img_boundary_mask = (meta['acc'] > 0.5).detach().cpu().squeeze().numpy().astype(np.uint8)
+                img_boundary_mask_cleaned = process_boundary_mask(img_boundary_mask)
+                frame = frame * img_boundary_mask_cleaned[..., None]
+                frame = frame[crop:-crop, crop:-crop]
+                frames.append(frame)
 
-        print('pre-processing time: {:.5f}, \n'
-              'total rendering time: {:.5f} \n'
-              'number of frames: {} \n'
-              'per-frame rendering time: {:.5f} \n'
-              'video resolution: {} \n'
-              'total runtime: {:.5f}'
-              .format(pre_processing_time, render_time, num_frames, render_time / num_frames[j],
-                      direct_frame.shape[:2], pre_processing_time + render_time))
-
-        rgb_file1 = data['src_rgb_file1'][0]
-        rgb_file2 = data['src_rgb_file2'][0]
-        frame_id1 = os.path.basename(rgb_file1).split('.')[0]
-        frame_id2 = os.path.basename(rgb_file2).split('.')[0]
-        scene_id = rgb_file1.split('/')[-3]
-
-        for k, video_path in enumerate(video_paths):
             video_out_file = os.path.join(video_out_folder, '{}_{}-{}-{}.mp4'.format(
-                video_path, scene_id, frame_id1, frame_id2))
-            imageio.mimwrite(video_out_file, frames[k], fps=25, quality=8)
+                video_paths[j], scene_id, frame_id1, frame_id2))
+            imageio.mimwrite(video_out_file, frames, fps=25, quality=8)
 
         print('space-time videos have been saved in {}.'.format(video_out_folder))
 

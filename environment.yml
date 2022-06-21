@@ -42,7 +42,6 @@ dependencies:
   - openjpeg=2.4.0=h3ad879b_0
   - openssl=1.1.1l=h7f8727e_0
   - pillow=8.3.1=py37h2c7a002_0
-  - pip=21.0.1=py37h06a4308_0
   - portalocker=2.3.2=py37h89c1867_0
   - python=3.7.11=h12debd9_0
   - python_abi=3.7=2_cp37m
@@ -50,7 +49,6 @@ dependencies:
   - pytorch3d=0.6.0=py37_cu101_pyt171
   - pyyaml=5.4.1=py37h5e8e339_0
   - readline=8.1=h27cfd23_0
-  - setuptools=58.0.4=py37h06a4308_0
   - six=1.16.0=pyhd3eb1b0_0
   - sqlite=3.36.0=hc218d9a_0
   - tabulate=0.8.9=pyhd8ed1ab_0
@@ -78,7 +76,7 @@ dependencies:
     - dill==0.3.4
     - fastrlock==0.8
     - filelock==3.3.0
-    - gdown==4.2.0
+    - gdown==4.4.0
     - google-auth==2.3.0
     - google-auth-oauthlib==0.4.6
     - grpcio==1.41.0
@@ -98,6 +96,7 @@ dependencies:
     - opencv-python==4.5.3.56
     - packaging==21.0
     - pandas==1.3.4
+    - pip==22.1.2
     - plotly==5.3.1
     - protobuf==3.18.1
     - pyasn1==0.4.8
@@ -114,6 +113,7 @@ dependencies:
     - scikit-image==0.18.3
     - scikit-learn==1.0
     - scipy==1.7.1
+    - setuptools==62.4.0
     - sklearn==0.0
     - soupsieve==2.2.1
     - tenacity==8.0.1
@@ -127,4 +127,4 @@ dependencies:
     - urllib3==1.26.7
     - werkzeug==2.0.2
     - zipp==3.6.0
-prefix: /home/qianqianwang/anaconda3/envs/3d_moments
+prefix: /phoenix/S7/qw246/anaconda3/envs/3d_moments

@@ -28,7 +28,6 @@ class SceneFlowEstimator():
         '''
         :param img1: [B, 3, H, W]
         :param img2: [B, 3, H, W]
-        :pa
         :return: optical_flow, [B, H, W, 2]
         '''
         if not self.train_raft:

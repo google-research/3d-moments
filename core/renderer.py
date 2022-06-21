@@ -160,13 +160,12 @@ class ImgRenderer():
                                                             global_out_list[-1][..., [3]]
                                                             )
         direct_rgb_out = w1 * direct_color_out_list[0] + w2 * direct_color_out_list[-1]
-        global_out = torch.cat([global_out_list[0], global_out_list[-1]], dim=-1)
         pred_rgb = self.model.img_decoder(global_out_list[0].permute(0, 3, 1, 2),
                                           global_out_list[-1].permute(0, 3, 1, 2),
                                           time)
 
         direct_rgb = direct_rgb_out[..., :3].permute(0, 3, 1, 2)
-        acc = global_out[..., [3]].permute(0, 3, 1, 2)
+        acc = 0.5 * (global_out_list[0][..., [3]] + global_out_list[1][..., [3]]).permute(0, 3, 1, 2)
         meta['acc'] = acc
         return pred_rgb, direct_rgb, meta
 

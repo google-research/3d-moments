@@ -13,10 +13,8 @@
 # limitations under the License.
 
 
-from .mannequin import MannequinChallengeDataset
 from .vimeo import VimeoDataset
 
 dataset_dict = {
-    'mannequin': MannequinChallengeDataset,
     'vimeo': VimeoDataset,
 }

@@ -7,12 +7,12 @@ This repository contains code for paper "3D Moments from Near-Duplicate Photos",
 > [David Salesin](http://salesin.cs.washington.edu/), 
 > [Noah Snavely](https://www.cs.cornell.edu/~snavely/),
 > [Brian Curless](https://homes.cs.washington.edu/~curless/), 
-> [Janne Kontkanen](https://www.linkedin.com/in/jannekontkanen/)
+> [Janne Kontkanen](https://www.linkedin.com/in/jannekontkanen/)   
 > CVPR 2022
 
+#### [Project Page](https://3d-moments.github.io/) | [Paper](https://arxiv.org/abs/2205.06255)
 ![video](assets/teaser.gif)
 
-#### [Project Page](https://3d-moments.github.io/) | [Paper](https://arxiv.org/abs/2205.06255)
 ## Prerequisites
 The code is tested with Python3.7, PyTorch == 1.7.1 and CUDA == 10.1. 
    We recommend you to use anaconda to make sure that all dependencies are in place. 
@@ -45,7 +45,8 @@ The original Mannequin Challenge Dataset only provides the camera parameters.
 To train on the Mannequin Challenge dataset, 
 one would need to first run Structure from Motion (SfM) to get sparse point clouds, and then compute a scale and a shift 
 vector to align SfM depths with monocular depths.
-Unfortunately, we do not plan to release our generated SfM point clouds due to privacy concerns, and one would
+Unfortunately, we do not plan to release our generated SfM point clouds on Mannequin Challenge dataset 
+due to privacy concerns, and one would
 need to run SfM (or triangulation) themselves. 
 However, one can still train a model only on the Vimeo-90k Dataset.
 

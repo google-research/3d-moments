@@ -38,7 +38,7 @@ class Namespace:
 
 def get_raft_model(args):
     flow_args = Namespace()
-    setattr(flow_args, 'model', '/mnt/filestore/code/scene_flow/RAFT/models/raft-things.pth')
+    setattr(flow_args, 'model', 'third_party/RAFT/models/raft-things.pth')
     setattr(flow_args, 'small', False)
     setattr(flow_args, 'mixed_precision', False)
     setattr(flow_args, 'alternate_corr', False)

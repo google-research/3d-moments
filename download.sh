@@ -14,11 +14,11 @@
 
 
 # download DPT (https://github.com/isl-org/DPT) pretrained weights into DPT/weights
-wget https://github.com/intel-isl/DPT/releases/download/1_0/dpt_hybrid-midas-501f0c75.pt -P DPT/weights
+wget https://github.com/intel-isl/DPT/releases/download/1_0/dpt_hybrid-midas-501f0c75.pt -P third_party/DPT/weights
 
 # download RAFT (https://github.com/princeton-vl/RAFT) pretrained weights into RAFT/models/
 wget https://www.dropbox.com/s/4j4z58wuv8o0mfz/models.zip
-unzip models.zip -d RAFT/
+unzip models.zip -d third_party/RAFT/
 rm -rf models.zip
 
 # download rgbd inpainting pretrained weights into inpainting_ckpts/

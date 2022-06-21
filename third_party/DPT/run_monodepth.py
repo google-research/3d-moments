@@ -121,7 +121,7 @@ def run_dpt(input_path, output_path, model_path, model_type="dpt_hybrid", optimi
     # create output folder
     os.makedirs(output_path, exist_ok=True)
 
-    print("start computing DPT depth maps...")
+    print('=========================computing DPT depth maps...=========================')
     for ind, img_name in enumerate(img_names):
         if os.path.isdir(img_name):
             continue

@@ -4,11 +4,11 @@ distributed = False
 loss_mode = vgg19
 train_dataset = tiktok
 eval_dataset = jamie
+eval_mode = True
 
 use_depth_for_decoding = True
 adaptive_pts_radius = True
 train_raft = False
-use_inpainting_mask_for_feature = True
 visualize_rgbda_layers = False
 
 ckpt_path = pretrained/model_250000.pth
