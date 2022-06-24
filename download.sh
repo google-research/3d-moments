@@ -31,4 +31,4 @@ mv depth-model.pth inpainting_ckpts/
 mv edge-model.pth inpainting_ckpts/
 
 # download the 3D moments pretrained model:
-gdown https://drive.google.com/uc?id=1alRujVVWhqysU2xD8i5JvEvkVYinxLLD -O pretrained/
+gdown https://drive.google.com/uc?id=1keqdnl2roBO2MjXhbd0VbfYaGAhyjUed -O pretrained/
